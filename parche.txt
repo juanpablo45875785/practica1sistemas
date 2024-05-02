@@ -1,0 +1,459 @@
+
+id="miFormulario" onsubmit="return false;"
+id="botonEnviar" class="btn btn-info col-lg-4" value="REGISTRAR"
+<input type="hidden" name="tipo_funcion" value="actualizarUsuario">
+BUSCADOR
+<div class="row justify-content-end">
+                    <div class="col-lg-3">
+                        <form action="" method="GET">
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control" name="buscar" placeholder="Nombre o Apellido">
+                                <button class="btn btn-primary" type="submit">Buscar</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+JAVASCRIP ALERTA
+
+function ConfirmarEliminacionUsuario(id) {
+    var confirmar = confirm("¿Desea eliminar este usuario?");
+    if (confirmar) {
+        return window.location.href = "controllers/admin_eliminar.php?id_contacto=" + id;
+    }
+}
+function ConfirmarEliminacionCarrera(id) {
+    var confirmar = confirm("desea eliminar esta Carrera");
+    if (confirmar) {
+        return window.location.href = "controllers/admin_eliminar.php?id_car=" + id;
+    } else {
+        return false;
+    }
+}
+function ConfirmarEliminacionOrigen(id) {
+    var confirmar = confirm("desea eliminar este Origen");
+    if (confirmar) {
+        return window.location.href = "controllers/admin_eliminar.php?id_orig=" + id;
+    } else {
+        return false;
+    }
+}
+function ConfirmarEliminacionPropietario(id) {
+    var confirmar = confirm("desea eliminar este Propietario");
+    if (confirmar) {
+        return window.location.href = "controllers/admin_eliminar.php?id_prop=" + id;
+    } else {
+        return false;
+    }
+}
+function insertar() {
+    Swal.fire({
+        title: '¿Desea agregar un nuevo elemento?',
+        text: 'Esta acción agregará un nuevo elemento a la lista',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí, agregar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            // Si el usuario confirma, enviar el formulario manualmente
+            document.getElementById("miFormulario").submit();
+        } else {
+            document.getElementById("botonEnviar").disabled = false;
+        }
+    });
+}
+
+
+
+function actualizar() {
+    Swal.fire({
+        title: '¿Está seguro de modificar los datos?',
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí, modificar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            document.getElementById("miFormulario").submit();
+        } else {
+            document.getElementById("botonEnviar").disabled = false;
+        }
+    });
+}
+
+function exportarExcel() {
+    var confirmar = confirm("Exportar Tabla a Excel");
+
+    return confirmar;
+}
+function exportarPdf() {
+    var confirmar = confirm("Exportar Tabla a PDF");
+
+    return confirmar;
+}
+
+RECIBE LOS MENSAJES
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+    <?php if (isset($_GET['mensaje'])): ?>
+        <?php if ($_GET['mensaje'] === "exitoso"): ?>
+            Swal.fire({
+                icon: 'success',
+                title: 'Operación exitosa',
+                text: 'La actualización se realizó correctamente.',
+                showConfirmButton: false,
+                timer: 2000
+            });
+        <?php elseif ($_GET['mensaje'] === "error"): ?>
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'Hubo un problema al realizar la actualización.',
+                showConfirmButton: false,
+                timer: 2000
+            });
+        <?php endif; ?>
+    <?php endif; ?>
+</script>
+
+CSS COLORES
+.alerta {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #ffcc00;
+    color: #333;
+    padding: 10px 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+  }
+  .bg-blue {
+    background-color: #154360;
+}
+
+.bg-azul {
+    background-color: rgb(0, 58, 115) ;
+}
+
+.soft-color-form {
+    background-color: #154360;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.soft-color-form1 {
+    background-color: #154360;
+    padding: 20px;
+    border-radius: 10px;
+}
+
+.placeholder-centered::placeholder {
+    text-align: center;
+}
+
+.green-background {
+    background-color: #4CAF50;
+    /* Cambia este color a tu verde deseado */
+}
+
+.icon-bg {
+    background-color: white;
+    padding: 8px;
+}
+.table-white {
+  background-color: #154360 ;
+  color: white; 
+}
+.color-1{
+    background-color: #154360 ;
+}
+.btn-color{
+    background-color: aqua;
+    
+}
+
+CONTROLLERS
+<?php
+include ("../conexion.php");
+
+//---------------------------------VERIFICA QUE TIPO DE FUNCION SE EJECUTA---------------------------------------------------------------------
+if (isset($_POST['tipo_funcion']) && $_POST['tipo_funcion'] === 'actualizarUsuario') {
+    actualizarUsuario($conexion);
+}
+
+if (isset($_POST['tipo_funcion']) && $_POST['tipo_funcion'] === 'actualizarCarrera') {
+    actualizarCarrera($conexion);
+}
+
+if (isset($_POST['tipo_funcion']) && $_POST['tipo_funcion'] === 'actualizarPropietario') {
+    actualizarPropietario($conexion);
+}
+
+if (isset($_POST['tipo_funcion']) && $_POST['tipo_funcion'] === 'actualizarOrigen') {
+    actualizarOrigen($conexion);
+}
+
+//---------------------------------FUNCIONES-------------------------------------------------------------------------------
+function actualizarUsuario($conexion)
+{
+    if (isset($_POST['cod_car_1']) && !empty($_POST['cod_car_1'])) {
+        $nombre = mysqli_real_escape_string($conexion, $_POST['nombre_cont']);
+        $apellido = mysqli_real_escape_string($conexion, $_POST['apellido_cont']);
+        $codigo1 = mysqli_real_escape_string($conexion, $_POST['cod_car_1']);
+        if (isset($_POST['cod_car_2']) && !empty($_POST['cod_car_2'])) {
+            $codigo2 = mysqli_real_escape_string($conexion, $_POST['cod_car_2']);
+        } else {
+            $codigo2 = null;
+        }
+        $telefono1 = mysqli_real_escape_string($conexion, $_POST['telefono_1']);
+        $telefono2 = mysqli_real_escape_string($conexion, $_POST['telefono_2']);
+        $propietario = mysqli_real_escape_string($conexion, $_POST['propietario_cont']);
+        $origen = mysqli_real_escape_string($conexion, $_POST['cod_origen_dato']);
+        $codigoestado = mysqli_real_escape_string($conexion, $_POST['cod_estado_cont']);
+        $descripcion = mysqli_real_escape_string($conexion, $_POST['descripcion_cont']);
+        $estado = 1;
+
+        // Obtener el ID del usuario a editar 
+        $id = $_POST['id_contacto'];
+
+        $sql = "UPDATE tbl_contacto SET nombre_cont='$nombre', apellido_cont='$apellido', cod_car_1='$codigo1', cod_car_2='$codigo2', telefono_1='$telefono1', telefono_2='$telefono2', propietario_cont='$propietario', cod_origen_dato='$origen', cod_estado_cont='$codigoestado', descripcion_cont='$descripcion', estado_cont='$estado' WHERE id_contacto='$id'";
+
+        $query = mysqli_query($conexion, $sql);
+
+        // Verificar si la actualización fue exitosa
+        if ($query) {
+            header("Location: ../admin_usuario.php?mensaje=exitoso");
+            exit;
+        } else {
+            header("Location: ../admin_usuario.php?mensaje=error");
+            exit;
+        }
+    } else {
+        header("Location: ../admin_usuario.php?mensaje=incompleto");
+        exit;
+    }
+}
+
+
+function actualizarCarrera($conexion)
+{
+    if (isset($_POST['nombre_car'], $_POST['id_car'])) {
+        // Obtener los datos del formulario y escaparlos 
+        $nombres = mysqli_real_escape_string($conexion, $_POST['nombre_car']);
+        $id = $_POST['id_car'];
+        $estado = 1;
+
+        // Preparar la consulta para actualizar los datos de la carrera
+        $sql = "UPDATE carrera_1 SET nombre_car='$nombres', estado_car='$estado' WHERE id_car='$id'";
+
+        // Ejecutar la consulta
+        $query = mysqli_query($conexion, $sql);
+
+        // Verificar si la actualización fue exitosa
+        if ($query) {
+            header("Location: ../admin_carrera_tabla.php?mensaje=exitoso");
+            exit;
+        } else {
+            header("Location: ../admin_carrera_tabla.php?mensaje=error");
+            exit;
+        }
+    } else {
+        header("Location: ../admin_carrera_tabla.php?mensaje=incompleto");
+        exit;
+    }
+}
+
+
+function actualizarOrigen($conexion)
+{
+    // Obtener los datos del formulario y escaparlos 
+    $nombres = mysqli_real_escape_string($conexion, $_POST['nombre_orig']);
+
+    // Obtener el ID del usuario a editar 
+    $id = $_POST['id_orig'];
+    $nombres = $_POST['nombre_orig'];
+    $estado = 1;
+
+    // Preparar la consulta para actualizar los datos del usuario
+    $sql = "UPDATE origen_dato SET nombre_orig='$nombres', estado_orig='$estado' WHERE id_orig='$id'";
+
+    // Ejecutar la consulta
+    $query = mysqli_query($conexion, $sql);
+
+    // Verificar si la actualización fue exitosa
+    if ($query) {
+        header("Location: ../admin_origen_tabla.php?mensaje=exitoso");
+        exit;
+    } else {
+        header("Location: ../admin_origen_tabla.php?mensaje=error");
+        exit;
+    }
+
+}
+
+function actualizarPropietario($conexion)
+{
+    // Obtener los datos del formulario y escaparlos 
+    $nombres = mysqli_real_escape_string($conexion, $_POST['nombre_prop']);
+
+    // Obtener el ID del usuario a editar 
+    $id = $_POST['id_prop'];
+    $nombres = $_POST['nombre_prop'];
+    $estado = 1;
+
+    // Preparar la consulta para actualizar los datos del usuario
+    $sql = "UPDATE propietario SET nombre_prop='$nombres', estado_prop='$estado' WHERE id_prop='$id'";
+
+    // Ejecutar la consulta
+    $query = mysqli_query($conexion, $sql);
+
+    // Verificar si la actualización fue exitosa
+    if ($query) {
+        header("Location: ../admin_propietario_tabla.php?mensaje=exitoso");
+        exit;
+    } else {
+        header("Location: ../admin_propietario_tabla.php?mensaje=error");
+        exit;
+    }
+}
+
+
+
+?>
+
+
+ELIMINAR CONTROLLERS
+<?php
+include "../conexion.php";
+
+eliminarUsuario($conexion);
+
+eliminarCarrera($conexion);
+
+eliminarPropietario($conexion);
+
+eliminarOrigen($conexion);
+
+
+function eliminarUsuario($conexion)
+{
+    // Verifica si se recibió el ID del contacto y no está vacío
+    if (isset($_GET['id_contacto']) && !empty($_GET['id_contacto'])) {
+        $id = $_GET['id_contacto'];
+
+        // Definir el nuevo estado
+        $estado = 0;
+
+        // Construir la consulta SQL
+        $sql = "UPDATE tbl_contacto SET estado_cont = '$estado' WHERE id_contacto = '$id'";
+
+        // Ejecutar la consulta SQL
+        $query = mysqli_query($conexion, $sql);
+
+        // Verificar si la consulta se ejecutó correctamente
+        if ($query) {
+            // Redirigir al usuario de vuelta a la página de administración de usuarios
+            header("Location: ../admin_usuario.php");
+            exit;
+        } else {
+            // Imprimir el error si hubo algún problema con la consulta SQL
+            echo "Error al actualizar el estado del usuario: " . mysqli_error($conexion);
+        }
+    } else {
+        // Si no se recibió el ID del usuario, mostrar un mensaje de error
+        echo "ID del usuario no recibido.";
+    }
+}
+
+function eliminarCarrera($conexion)
+{
+    if (isset($_GET['id_car']) && !empty($_GET['id_car'])) {
+        $id = $_GET['id_car'];
+
+        // Definir el nuevo estado
+        $estado = 0;
+
+        // Construir la consulta SQL
+        $sql = "UPDATE carrera_1 SET estado_car = '$estado' WHERE id_car = '$id'";
+
+        // Ejecutar la consulta SQL
+        $query = mysqli_query($conexion, $sql);
+
+        // Verificar si la consulta se ejecutó correctamente
+        if ($query) {
+            header("Location: ../admin_carrera_tabla.php");
+            exit;
+        } else {
+            // Imprimir el error si hubo algún problema con la consulta SQL
+            echo "Error al actualizar el estado del usuario: " . mysqli_error($conexion);
+        }
+    } else {
+        // Si no se recibió el ID del usuario, mostrar un mensaje de error
+        echo "ID del usuario no recibido.";
+    }
+}
+
+function eliminarPropietario($conexion)
+{
+    if (isset($_GET['id_prop']) && !empty($_GET['id_prop'])) {
+        $id = $_GET['id_prop'];
+
+        // Definir el nuevo estado
+        $estado = 0;
+
+        // Construir la consulta SQL
+        $sql = "UPDATE propietario SET estado_prop = '$estado' WHERE id_prop = '$id'";
+
+        // Ejecutar la consulta SQL
+        $query = mysqli_query($conexion, $sql);
+
+        // Verificar si la consulta se ejecutó correctamente
+        if ($query) {
+            header("Location: ../admin_propietario_tabla.php");
+            exit;
+        } else {
+            // Imprimir el error si hubo algún problema con la consulta SQL
+            echo "Error al actualizar el estado del usuario: " . mysqli_error($conexion);
+        }
+    } else {
+        // Si no se recibió el ID del usuario, mostrar un mensaje de error
+        echo "ID del usuario no recibido.";
+    }
+}
+function eliminarOrigen($conexion)
+{
+    if (isset($_GET['id_orig']) && !empty($_GET['id_orig'])) {
+        $id = $_GET['id_orig'];
+
+        // Definir el nuevo estado
+        $estado = 0;
+
+        // Construir la consulta SQL
+        $sql = "UPDATE origen_dato SET estado_orig = '$estado' WHERE id_orig = '$id'";
+
+        // Ejecutar la consulta SQL
+        $query = mysqli_query($conexion, $sql);
+
+        // Verificar si la consulta se ejecutó correctamente
+        if ($query) {
+            header("Location: ../admin_origen_tabla.php");
+            exit;
+        } else {
+            // Imprimir el error si hubo algún problema con la consulta SQL
+            echo "Error al actualizar el estado del usuario: " . mysqli_error($conexion);
+        }
+    } else {
+        // Si no se recibió el ID del usuario, mostrar un mensaje de error
+        echo "ID del usuario no recibido.";
+    }
+}
+
+?>
+
